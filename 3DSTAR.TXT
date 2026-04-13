@@ -1,5 +1,5 @@
                                 3 D - S T A R
-                                Version  0.91
+                                Version  0.92
 
 INTRODUCTION  
   
@@ -47,8 +47,8 @@ GETTING STARTED
 
   Type "3DSTAR" to start the program.  After loading the stars from the 
 3DSTAR.DAT file into memory, the program will ask you for starting 
-parameters.  The first time you run the program, hit <ENTER> seven times to
-accept the default values.
+parameters.  The first time you run the program, hit <ENTER> eight times 
+to accept the default values.
 
   The top part of the screen will display the stars, and the lower part has
 the current status.  At Magnification = 1, the screen goes from -180ø on the
@@ -65,9 +65,8 @@ to 4 or so, which will show you the area of the sky from 315ø to 45ø
 on magnification 1 so you can see the whole sky at once.
 
   You are heading in the direction 0ø mark 0ø (see the "Course" display), 
-which is directly towards the Galactic Core.  The bright yellow star above
-and to the right of center is Sol, our sun.  Notice how fast it moves as
-we pass it at a distance of 0.14 light-years.  The yellow star just to
+which is directly towards the Galactic Core.  You are at coordinates
+[0, 0, 0], which is Sol, our Sun's, coordinates.  The yellow star just to
 the right of center is Alpha Centauri, closest star to Sol at only 4.3
 light-years.  The bright white star on the right side of the screen, a
 little below the Galactic plane, is Sirius.  The constellation to the right
@@ -80,10 +79,11 @@ Those stars are Deneb, Vega, and Altair, and they are known as the
 "Summer Triangle" because they are high above the horizon on summer
 evenings in the northern hemisphere.
 
-  Soon you will pass Sol and it will fall behind you, heading in the
-direction of Orion.  Alpha Centauri is slowly moving away from the center,
-passing the blue star Beta Centauri, then the two stars Acrux and Beta
-Crucis.
+  If you press capital "A" (for accelerate) you will start moving.  Since you
+are moving directly away from the Sun now, it is behind you and you can't
+see it unless turn slightly, even with a 360-degree view.  Alpha Centauri is 
+slowly moving away from the center, passing the blue star Beta Centauri, 
+then the two stars Acrux and Beta Crucis.
 
   Here are the keys that are currently available while the program is
 running:
@@ -94,6 +94,9 @@ running:
   a ........... Slow down
   2, 4, 6, 8 .. turn ship by 5ø in that direction; use the keypad with
                 Num Lock on
+  5 ........... Set a course for the star on info display.  You may need
+                to press 5 several times for a perfect aim; check the info
+                bar to see if the course is correct.
   N ........... Next star on information display
   n ........... Last star on information display
 
@@ -135,6 +138,13 @@ January 30, 1994 ... Finished version 0.90, compiled with QuickBasic 4.5.
 
 February 2, 1994 ... Finished version 0.91, the database now has 333 stars
                      (0.90 only had 63).  Information bar added.
+
+February 4, 1994 ... Finished version 0.92, now capable of setting a course
+                     to the selected star, and displays the apparent
+                     magnitude of that star from your present location.  The
+                     menu now asks for a starting location, so you can enter
+                     a star's name and start the program at those 
+                     coordinates.
 
 ----------------------------------------------------------------------------
 
