@@ -30,7 +30,7 @@ COMMON SHARED X$
 COMMON SHARED Xo!
 COMMON SHARED Yo!
 COMMON SHARED Zo!
-COMMON SHARED SPEED
+COMMON SHARED speed
 COMMON SHARED MAG
 COMMON SHARED GLngD%
 COMMON SHARED GLatD%
@@ -39,8 +39,12 @@ COMMON SHARED GLatR
 COMMON SHARED SPEEDX
 COMMON SHARED SPEEDY
 COMMON SHARED SPEEDZ
+COMMON SHARED INFOSTAR
+COMMON SHARED INFOTH
+COMMON SHARED INFOPH
+COMMON SHARED INFODX
 
-DIM N$(75), X(75), Y(75), Z(75), M(75), s$(75), s(75, 3), l(75), PHSCR(75, 2), THSCR(75, 2), t(2), AM(75, 2)
+DIM N$(350), X(350), Y(350), Z(350), M(350), s$(350), s(350, 3), l(350), PHSCR(350, 2), THSCR(350, 2), t(2), AM(350, 2), tt(4)
 CONST PI = 3.141592653589793#
 
 CALL PalSet
@@ -48,16 +52,24 @@ CALL LoadStars
 CALL Menu
 CALL MakeScreen
 DO
+  'tt(0) = TIMER: LOCATE 14: PRINT tt(0) - tt(4)
   CALL Calc
+  'tt(1) = TIMER
   CALL PlotStars
+  'tt(2) = TIMER
   CALL MoveShip(SPEEDX, SPEEDY, SPEEDZ)
+  'tt(3) = TIMER
   CALL GetKey
+  'tt(4) = TIMER
+  'LOCATE 10: FOR jed = 1 TO 4: PRINT tt(jed) - tt(jed - 1): NEXT jed
 LOOP
 
-DATA "O",11,9,8,"B",11,9,8,"A",15,7,8,"F",15,7,8
-DATA "G",14,14,8,"K",6,4,8,"M",12,4,8,"0",0,0,0
+DATA "O",11,9,8,"B",11,7,8,"A",15,7,8,"F",15,7,8
+DATA "G",14,7,8,"K",6,7,8,"M",12,7,8,"0",0,0,0
+DATA "W",11,9,8,"N",12,7,8
 
 SUB Calc
+  IF INFOSTAR < 1 OR INFOSTAR > Last% THEN INFOSTAR = 1
   MAGX = 1.7222 * MAG: MAGY = 1.7222 * MAG
   LastHop% = ThisHop%: ThisHop% = ABS(ThisHop% - 1)
   FOR StNum% = First% TO Last%
@@ -65,24 +77,22 @@ SUB Calc
   YS = (Y(StNum%) - Yo!) * COS(GLngR) * COS(GLatR) + (X(StNum%) - Xo!) * SIN(GLngR) * COS(GLatR) + (Z(StNum%) - Zo!) * SIN(GLatR)
   ZS = (Z(StNum%) - Zo!) * COS(GLatR) - (Y(StNum%) - Yo!) * COS(GLngR) * SIN(GLatR) - (X(StNum%) - Xo!) * SIN(GLngR) * SIN(GLatR)
   AM(StNum%, ThisHop%) = M(StNum%) - 5 + 5 * LOG(DIST(XS, YS, ZS) / 3.26) / LOG(10)
-  IF AM(StNum%, ThisHop%) < 2 THEN l(StNum%) = 1 ELSE IF AM(StNum%, ThisHop%) < 4 THEN l(StNum%) = 2 ELSE IF AM(StNum%, ThisHop%) < 7 THEN l(StNum%) = 3
+  IF AM(StNum%, ThisHop%) < 2.5 THEN l(StNum%) = 1 ELSE IF AM(StNum%, ThisHop%) < 4 THEN l(StNum%) = 2 ELSE IF AM(StNum%, ThisHop%) < 7 THEN l(StNum%) = 3
   IF YS = 0 THEN IF XS > 0 THEN THETA = 90 ELSE THETA = -90 ELSE THETA = ATN(XS / YS) * 180 / PI
   IF SQR(XS ^ 2 + YS ^ 2) = 0 THEN IF Z > 0 THEN PHI = 90 ELSE PHI = -90 ELSE PHI = ATN(ZS / SQR(XS ^ 2 + YS ^ 2)) * 180 / PI
   IF YS < 0 THEN THETA = THETA + 180
   IF THETA > 180 THEN THETA = THETA - 360
+  IF StNum% = INFOSTAR THEN
+      INFOTH = THETA
+      INFOPH = PHI
+      INFODX = DIST(XS, YS, ZS)
+  END IF
   THSCR(StNum%, ThisHop%) = 310 + THETA * MAGX
   PHSCR(StNum%, ThisHop%) = 155 - PHI * MAGY
   NEXT StNum%
-  SPEEDX = SPEED * COS(GLatR) * SIN(GLngR)
-  SPEEDY = SPEED * COS(GLatR) * COS(GLngR)
-  SPEEDZ = SPEED * SIN(GLatR)
-  t(ThisHop%) = TIMER
-  SPD! = SPEED * 31536000 / (t(ThisHop%) - t(LastHop%))
-  LOCATE 21, 17: PRINT SPEED; "light-years per jump ("; SPD!; "c)  "
-  LOCATE 22, 17: PRINT GLngD%; "mark"; GLatD%; "         "
-  LOCATE 23, 17: PRINT Xo!, Yo!, Zo!; "          "
-  LOCATE 24, 17: PRINT MAG
-  LOCATE 25, 17: PRINT (t(ThisHop%) - t(LastHop%))
+  SPEEDX = speed * COS(GLatR) * SIN(GLngR)
+  SPEEDY = speed * COS(GLatR) * COS(GLngR)
+  SPEEDZ = speed * SIN(GLatR)
 END SUB
 
 FUNCTION DIST (XS, YS, ZS)
@@ -91,9 +101,7 @@ END FUNCTION
 
 SUB GetKey
   X$ = INKEY$
-  IF X$ = "" THEN
-    GOTO Skip1
-  ELSE
+  IF X$ <> "" THEN
     IF X$ = "2" THEN GLatR = GLatR - 5 * PI / 180
     IF X$ = "8" THEN GLatR = GLatR + 5 * PI / 180
     IF X$ = "4" THEN GLngR = GLngR - 5 * PI / 180
@@ -101,30 +109,31 @@ SUB GetKey
     GLatD% = GLatR * 180 / PI
     GLngD% = GLngR * 180 / PI
     IF X$ = "Z" THEN MAG = MAG * 2
-    IF X$ = "X" THEN MAG = MAG / 2
-    IF X$ = "A" THEN SPEED = SPEED * 2
-    IF X$ = "S" THEN SPEED = SPEED / 2
+    IF X$ = "z" THEN MAG = MAG / 2
+    IF X$ = "A" THEN speed = speed * 2
+    IF X$ = "a" THEN speed = speed / 2
     IF X$ = "M" THEN CALL StarMap: RePlot = 1
+    IF X$ = "N" THEN INFOSTAR = INFOSTAR + 1
+    IF X$ = "n" THEN INFOSTAR = INFOSTAR - 1
   END IF
-Skip1:
 END SUB
 
 SUB LoadStars
 OPEN "3dstar.dat" FOR INPUT AS #1
-CLS : PRINT "Loading star data..."
+CLS : LOCATE 1: PRINT "Loading star data..."
 DO WHILE (NOT EOF(1))
-  LET NumStars = NumStars + 1
-  INPUT #1, N$(NumStars), X(NumStars), Y(NumStars), Z(NumStars), M(NumStars), s$(NumStars)
+  LET NumStars% = NumStars% + 1
+  LOCATE 1, 22: COLOR 14: PRINT NumStars%: COLOR 15
+  INPUT #1, N$(NumStars%), X(NumStars%), Y(NumStars%), Z(NumStars%), M(NumStars%), s$(NumStars%)
   SS$ = ""
   RESTORE
-  DO WHILE s$(NumStars) <> SS$
-    READ SS$, s(NumStars, 1), s(NumStars, 2), s(NumStars, 3)
+  DO WHILE s$(NumStars%) <> SS$
+    READ SS$, s(NumStars%, 1), s(NumStars%, 2), s(NumStars%, 3)
   LOOP
   IF M > 10 THEN a = a - 1
 LOOP
-NumStars = NumStars - 1
 First% = 1
-Last% = NumStars
+Last% = NumStars%
 END SUB
 
 SUB MakeScreen
@@ -148,7 +157,7 @@ INPUT "  Z = "; Zo!: IF Zo! = 0 THEN Zo! = -.1
 PRINT : PRINT "Initial course [default 0 mark 0]:"
 INPUT "  GalLong (0ø to 360ø)  = "; GLngD%: GLngR = GLngD% * PI / 180
 INPUT "  GalLat (-90ø to +90ø) = "; GLatD%: GLatR = GLatD% * PI / 180
-PRINT : INPUT "Speed factor [default .05] = "; SPEED: IF SPEED = 0 THEN SPEED = .05
+PRINT : INPUT "Speed factor [default .05] = "; speed: IF speed = 0 THEN speed = .05
 PRINT : INPUT "Magnification [default 1] = "; MAG: IF MAG = 0 THEN MAG = 1
 END SUB
 
@@ -170,13 +179,53 @@ SUB PlotStars
   FOR StNum% = First% TO Last%
     IF AM(StNum%, LastHop%) < 6 THEN
       PRESET (THSCR(StNum%, LastHop%), PHSCR(StNum%, LastHop%))
+      IF AM(StNum%, LastHop%) < 1.5 THEN
+        PRESET (THSCR(StNum%, LastHop%), PHSCR(StNum%, LastHop%) + 1)
+        PRESET (THSCR(StNum%, LastHop%), PHSCR(StNum%, LastHop%) - 1)
+        PRESET (THSCR(StNum%, LastHop%) + 1, PHSCR(StNum%, LastHop%))
+        PRESET (THSCR(StNum%, LastHop%) - 1, PHSCR(StNum%, LastHop%))
+        IF AM(StNum%, LastHop%) < -3 THEN
+          PRESET (THSCR(StNum%, LastHop%), PHSCR(StNum%, LastHop%) + 2)
+          PRESET (THSCR(StNum%, LastHop%), PHSCR(StNum%, LastHop%) - 2)
+          PRESET (THSCR(StNum%, LastHop%) + 2, PHSCR(StNum%, LastHop%))
+          PRESET (THSCR(StNum%, LastHop%) - 2, PHSCR(StNum%, LastHop%))
+        END IF
+      END IF
     END IF
     IF PHSCR(StNum%, ThisHop%) < 2 OR THSCR(StNum%, ThisHop%) < 2 OR PHSCR(StNum%, ThisHop%) > 309 OR THSCR(StNum%, ThisHop%) > 619 THEN GOTO Skip
     IF AM(StNum%, ThisHop%) < 6 THEN
       PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%)), s(StNum%, l(StNum%))
+      IF AM(StNum%, ThisHop%) < 1.5 THEN
+        PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%) + 1), s(StNum%, l(StNum%))
+        PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%) - 1), s(StNum%, l(StNum%))
+        PSET (THSCR(StNum%, ThisHop%) + 1, PHSCR(StNum%, ThisHop%)), s(StNum%, l(StNum%))
+        PSET (THSCR(StNum%, ThisHop%) - 1, PHSCR(StNum%, ThisHop%)), s(StNum%, l(StNum%))
+        IF AM(StNum%, ThisHop%) < -3 THEN
+          PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%) + 2), 8
+          PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%) - 2), 8
+          PSET (THSCR(StNum%, ThisHop%) + 2, PHSCR(StNum%, ThisHop%)), 8
+          PSET (THSCR(StNum%, ThisHop%) - 2, PHSCR(StNum%, ThisHop%)), 8
+        END IF
+      END IF
     END IF
 Skip:
   NEXT StNum%
+t(ThisHop%) = TIMER
+SPD! = speed * 31536000 / (t(ThisHop%) - t(LastHop%))
+IF speed < .01 THEN
+    sped = speed * 63170
+    U$ = "A.U."
+ELSE
+    sped = speed
+    U$ = "light-years"
+END IF
+LOCATE 21, 17: PRINT USING "###.## & per jump          "; sped; U$
+LOCATE 21, 50: PRINT USING "########.## c"; SPD!
+LOCATE 22, 17: PRINT USING "###.#  mark ###.#  "; GLngD%; GLatD%
+LOCATE 23, 17: PRINT USING "####.##     ####.##     ####.##"; Xo!; Yo!; Zo!
+LOCATE 24, 17: PRINT MAG
+LOCATE 25, 17: PRINT (t(ThisHop%) - t(LastHop%))
+LOCATE 26, 1: PRINT USING "Info: & ..... ###.## mark ###.## ..... ####.## ly             "; N$(INFOSTAR); INFOTH; INFOPH; INFODX
 END SUB
 
 SUB StarMap

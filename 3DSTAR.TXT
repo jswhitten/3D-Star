@@ -1,5 +1,5 @@
-                                 3DSTAR.EXE
-                                Version 0.90
+                                3 D - S T A R
+                                Version  0.91
 
 INTRODUCTION  
   
@@ -11,11 +11,10 @@ travel through this part of the galaxy, exploring our neighborhood of space
 out to a few thousand light-years.  Some of the features of this version
 are:
 
-þ Actual (X,Y,Z) galactic coordinates of 64 stars, including:  
+þ Actual (X,Y,Z) galactic coordinates of 333 stars, including:  
     The 25 brightest stars (as seen from Earth)
     The 26 nearest stars to Earth (including Sol)
-    The 7 stars of the Big Dipper
-    The brighter stars of Orion
+    The brighter stars of every major constellation
 
 þ Add more stars with the program 3DDATA.BAS, using their equatorial
   coordinates (RA, DEC), distance in light-years, absolute magnitude,
@@ -30,7 +29,10 @@ are:
 
 þ Choose any speed, even millions or billions of times the speed of light.
 
-þ VGA 640x480 16-color graphics
+þ VGA 640x480 16-color graphics, with the palette altered for better
+  simulation of spectral colors.
+
+þ Information bar displays direction and distance info on any star.
 
 
   You should have the following files:
@@ -39,6 +41,7 @@ are:
 3DSTAR.EXE              The main program
 3DDATA.EXE              Enter stars into the database
 3DSTAR.DAT              The star database
+3DSTAR.BAS              QuickBasic source code
 
 GETTING STARTED
 
@@ -57,9 +60,9 @@ be looking 90ø which is exactly 3/4 of the screen from the left side.  If
 you were looking out the left window, you would be facing -90ø (or 270ø)
 and that is 1/4 of the screen from the left side.  For a more realistic
 view of just straight ahead, you may want to increase the magnification
-to 4, which will show you the area of the sky from 315ø to 45ø (left-right)
-and from -22.5ø to +22.5ø (up-down).  But for now, leave it on magnification
-1 so you can see the whole sky at once.
+to 4 or so, which will show you the area of the sky from 315ø to 45ø 
+(left-right) and from -22.5ø to +22.5ø (up-down).  But for now, leave it 
+on magnification 1 so you can see the whole sky at once.
 
   You are heading in the direction 0ø mark 0ø (see the "Course" display), 
 which is directly towards the Galactic Core.  The bright yellow star above
@@ -83,20 +86,16 @@ passing the blue star Beta Centauri, then the two stars Acrux and Beta
 Crucis.
 
   Here are the keys that are currently available while the program is
-running.  If you have used version 0.01 of this program (the BASIC version)
-you will be pleasantly surprised by the speed of the compiled version.
-While it used to take about 6 seconds between jumps on my computer, a
-386SX/16, it now takes only 0.7 seconds with the compiled .EXE prgram.
+running:
 
   Z ........... Zoom in by 2x
-  X ........... UnZoom by 2x
-  A ........... Speed up (or <A>ccelerate)
-  S ........... <S>low down
-  2, 4, 6, 8 .. turn ship by 5ø in that direction.  Use the keypad with
-                Num Lock on.
-  
-  The commands must be in capital letters so turn your Caps Lock on while
-running the program as well.
+  z ........... UnZoom by 2x
+  A ........... Speed up (or Accelerate)
+  a ........... Slow down
+  2, 4, 6, 8 .. turn ship by 5ø in that direction; use the keypad with
+                Num Lock on
+  N ........... Next star on information display
+  n ........... Last star on information display
 
 
 HISTORY
@@ -134,9 +133,12 @@ January 30, 1994 ... Finished version 0.90, compiled with QuickBasic 4.5.
                      program did, and the source code is now structured 
                      with subprograms and functions for easier modification.
 
+February 2, 1994 ... Finished version 0.91, the database now has 333 stars
+                     (0.90 only had 63).  Information bar added.
+
 ----------------------------------------------------------------------------
 
-??????? ??, 1994? .. Once the StarMap, menu windows, etc. are finished I
+??????? ??, 1994 ... Once the StarMap, menu windows, etc. are finished I
                      will release the program (version 1.0) as shareware.
 
 
