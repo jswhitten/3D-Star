@@ -9,6 +9,7 @@ DECLARE SUB MakeScreen ()
 DECLARE SUB MoveShip (SPEEDX, SPEEDY, SPEEDZ)
 DECLARE SUB PlotStars ()
 DECLARE FUNCTION DIST (XS, YS, ZS)
+DECLARE FUNCTION U$ (SPEED)
 COMMON SHARED First%
 COMMON SHARED Last%
 COMMON SHARED AM()
@@ -44,7 +45,7 @@ COMMON SHARED INFOTH
 COMMON SHARED INFOPH
 COMMON SHARED INFODX
 
-DIM N$(350), X(350), Y(350), Z(350), M(350), s$(350), s(350, 3), l(350), PHSCR(350, 2), THSCR(350, 2), t(2), AM(350, 2), tt(4)
+DIM N$(400), X(400), Y(400), Z(400), M(400), s$(400), s(400, 3), l(400), PHSCR(400, 2), THSCR(400, 2), t(2), AM(400, 2), tt(4)
 CONST PI = 3.141592653589793#
 infostar% = 1
 
@@ -134,6 +135,8 @@ SUB GetKey
 END SUB
 
 SUB LoadStars
+INPUT "How many stars would you like to load [Enter = all of them]"; MaxStars%
+IF MaxStars% = 0 THEN MaxStars% = 9999
 OPEN "3dstar.dat" FOR INPUT AS #1
 CLS : LOCATE 1: PRINT "Loading star data..."
 DO WHILE (NOT EOF(1))
@@ -146,7 +149,9 @@ DO WHILE (NOT EOF(1))
     READ SS$, s(NumStars%, 1), s(NumStars%, 2), s(NumStars%, 3)
   LOOP
   IF M > 10 THEN a = a - 1
+IF NumStars% >= MaxStars% THEN GOTO Label1
 LOOP
+Label1:
 First% = 1
 Last% = NumStars%
 END SUB
@@ -209,12 +214,6 @@ SUB PlotStars
         PRESET (THSCR(StNum%, LastHop%), PHSCR(StNum%, LastHop%) - 1)
         PRESET (THSCR(StNum%, LastHop%) + 1, PHSCR(StNum%, LastHop%))
         PRESET (THSCR(StNum%, LastHop%) - 1, PHSCR(StNum%, LastHop%))
-        IF AM(StNum%, LastHop%) < -3 THEN
-          PRESET (THSCR(StNum%, LastHop%), PHSCR(StNum%, LastHop%) + 2)
-          PRESET (THSCR(StNum%, LastHop%), PHSCR(StNum%, LastHop%) - 2)
-          PRESET (THSCR(StNum%, LastHop%) + 2, PHSCR(StNum%, LastHop%))
-          PRESET (THSCR(StNum%, LastHop%) - 2, PHSCR(StNum%, LastHop%))
-        END IF
       END IF
     END IF
     IF PHSCR(StNum%, ThisHop%) < 2 OR THSCR(StNum%, ThisHop%) < 2 OR PHSCR(StNum%, ThisHop%) > 309 OR THSCR(StNum%, ThisHop%) > 619 THEN GOTO Skip
@@ -225,12 +224,6 @@ SUB PlotStars
         PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%) - 1), s(StNum%, l(StNum%))
         PSET (THSCR(StNum%, ThisHop%) + 1, PHSCR(StNum%, ThisHop%)), s(StNum%, l(StNum%))
         PSET (THSCR(StNum%, ThisHop%) - 1, PHSCR(StNum%, ThisHop%)), s(StNum%, l(StNum%))
-        IF AM(StNum%, ThisHop%) < -3 THEN
-          PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%) + 2), 8
-          PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%) - 2), 8
-          PSET (THSCR(StNum%, ThisHop%) + 2, PHSCR(StNum%, ThisHop%)), 8
-          PSET (THSCR(StNum%, ThisHop%) - 2, PHSCR(StNum%, ThisHop%)), 8
-        END IF
       END IF
     END IF
 Skip:
@@ -239,12 +232,10 @@ t(ThisHop%) = TIMER
 IF SPEED > 0 THEN SPD! = SPEED * 31536000 / (t(ThisHop%) - t(LastHop%)) ELSE SPD! = 0
 IF SPEED < .01 THEN
     sped = SPEED * 63170
-    U$ = "A.U."
 ELSE
     sped = SPEED
-    U$ = "light-years"
 END IF
-LOCATE 21, 17: PRINT USING "###.## & per jump          "; sped; U$
+LOCATE 21, 17: PRINT USING "###.## & per jump          "; sped; U$(SPEED)
 LOCATE 21, 50: PRINT USING "########.## c"; SPD!
 LOCATE 22, 17: PRINT USING "####.#  mark ####.#  "; GLngD%; GLatD%
 LOCATE 23, 17: PRINT USING "####.##     ####.##     ####.##"; Xo!; Yo!; Zo!
@@ -271,4 +262,12 @@ FOR GRIDY = 50 TO 275 STEP 15
 NEXT GRIDY
 LOCATE 24: INPUT Ready$
 END SUB
+
+FUNCTION U$ (SPEED)
+IF SPEED < .01 THEN
+        U$ = "A.U."
+ELSE
+        U$ = "light years"
+END IF
+END FUNCTION
 

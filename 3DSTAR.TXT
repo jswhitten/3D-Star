@@ -1,5 +1,5 @@
                                 3 D - S T A R
-                                Version  0.92
+                                Version  0.94
 
 INTRODUCTION  
   
@@ -11,7 +11,7 @@ travel through this part of the galaxy, exploring our neighborhood of space
 out to a few thousand light-years.  Some of the features of this version
 are:
 
-þ Actual (X,Y,Z) galactic coordinates of 333 stars, including:  
+þ Actual (X,Y,Z) galactic coordinates of 357 stars, including:  
     The 25 brightest stars (as seen from Earth)
     The 26 nearest stars to Earth (including Sol)
     The brighter stars of every major constellation
@@ -41,12 +41,18 @@ are:
 3DSTAR.EXE              The main program
 3DDATA.EXE              Enter stars into the database
 3DSTAR.DAT              The star database
-3DSTAR.BAS              QuickBasic source code
+
+  If you have ordered the source code, it should include these files:
+
+3DSTAR.BAS
+3DDATA.BAS
+
 
 GETTING STARTED
 
-  Type "3DSTAR" to start the program.  After loading the stars from the 
-3DSTAR.DAT file into memory, the program will ask you for starting 
+  Type "3DSTAR" to start the program.  When the program asks you how many 
+stars to load, hit <ENTER> to load all of them.  After loading the stars 
+from the 3DSTAR.DAT file into memory, the program will ask you for starting
 parameters.  The first time you run the program, hit <ENTER> eight times 
 to accept the default values.
 
@@ -99,6 +105,16 @@ running:
                 bar to see if the course is correct.
   N ........... Next star on information display
   n ........... Last star on information display
+  Q or ^Break . Quit
+
+  On slower computers (anything less than a 486DX) this program is likely
+to run slowly with all 357 of the stars loaded.  Look at the "System Speed"
+indicator at the bottom of the screen; it tells you how many seconds it 
+takes between each update of the screen.  If it's more than 1 or 2 seonds,
+the program will respond too slowly to commands and you may wish to restart
+the progam and load less stars.  At the prompt "How many stars?" type a
+number less than 357.  The less stars you load, the less detailed the
+starfield will be but the faster it will run.
 
 
 HISTORY
@@ -146,10 +162,13 @@ February 4, 1994 ... Finished version 0.92, now capable of setting a course
                      a star's name and start the program at those 
                      coordinates.
 
-----------------------------------------------------------------------------
+February 21, 1994 .. Finished version 0.93, now 357 stars in database.
 
-??????? ??, 1994 ... Once the StarMap, menu windows, etc. are finished I
+May 19, 1994 ....... First version released (version 0.94).  Added feature
+                     to set number of stars to be loaded for slower 
+                     computers.
+
+??????? ??, 19?? ... Once the StarMap, menu windows, etc. are finished I
                      will release the program (version 1.0) as shareware.
-
 
 
