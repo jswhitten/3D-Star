@@ -1,5 +1,5 @@
                                 3 D - S T A R
-                                Version  0.94
+                                Version  0.95
 
 INTRODUCTION  
   
@@ -87,15 +87,23 @@ evenings in the northern hemisphere.
 
   If you press capital "A" (for accelerate) you will start moving.  Since you
 are moving directly away from the Sun now, it is behind you and you can't
-see it unless turn slightly, even with a 360-degree view.  Alpha Centauri is 
-slowly moving away from the center, passing the blue star Beta Centauri, 
-then the two stars Acrux and Beta Crucis.
+see it unless you turn slightly, even with a 360-degree view.  Alpha Centauri 
+is slowly moving away from the center, passing the blue star Beta Centauri, 
+then the two stars Acrux and Beta Crucis in the Southern Cross.
+
+  Capital "M" will toggle the Star Map on and off.  This shows you a view
+from above your location ("up" in the Z direction) with the stars' brightness
+depending on their absolute (real) magnitude rather than their apparent
+brightness from your location.  You can move your ship around in this mode,
+just like normal, and your location is the small cyan circle in the middle
+of the screen.  The magnification now controls how many pixels for each
+light-year, so at magnification = 1, 1 pixel is 1 light year.
 
   Here are the keys that are currently available while the program is
 running:
 
   Z ........... Zoom in by 2x
-  z ........... UnZoom by 2x
+  z ........... UnZoom by 1/2x
   A ........... Speed up (or Accelerate)
   a ........... Slow down
   2, 4, 6, 8 .. turn ship by 5ø in that direction; use the keypad with
@@ -105,6 +113,7 @@ running:
                 bar to see if the course is correct.
   N ........... Next star on information display
   n ........... Last star on information display
+  M ........... Toggle Star Map On/Off
   Q or ^Break . Quit
 
   On slower computers (anything less than a 486DX) this program is likely
@@ -114,7 +123,9 @@ takes between each update of the screen.  If it's more than 1 or 2 seonds,
 the program will respond too slowly to commands and you may wish to restart
 the progam and load less stars.  At the prompt "How many stars?" type a
 number less than 357.  The less stars you load, the less detailed the
-starfield will be but the faster it will run.
+starfield will be but the faster it will run.  If you just want to see the
+constellations from a different star, and you're not going to be moving,
+load all the stars for maximum detail.
 
 
 HISTORY
@@ -168,7 +179,11 @@ May 19, 1994 ....... First version released (version 0.94).  Added feature
                      to set number of stars to be loaded for slower 
                      computers.
 
-??????? ??, 19?? ... Once the StarMap, menu windows, etc. are finished I
-                     will release the program (version 1.0) as shareware.
+June 4, 1994 ....... Version 0.95 released.  Now has a StarMap mode.
+
+****************************************************************************
+
+??????? ??, 19?? ... Once the mouse support, menu windows, etc. are finished 
+                     I will release the program (version 1.0) as shareware.
 
 

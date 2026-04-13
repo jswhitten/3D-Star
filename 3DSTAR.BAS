@@ -1,3 +1,8 @@
+REM ***********
+REM * 3D-STAR *
+REM * V. 0.95 *
+REM ***********
+
 DECLARE SUB PalSet ()
 DECLARE SUB StarMap ()
 DECLARE SUB ViewPort ()
@@ -10,6 +15,8 @@ DECLARE SUB MoveShip (SPEEDX, SPEEDY, SPEEDZ)
 DECLARE SUB PlotStars ()
 DECLARE FUNCTION DIST (XS, YS, ZS)
 DECLARE FUNCTION U$ (SPEED)
+COMMON SHARED RePlot%
+COMMON SHARED MapOn%
 COMMON SHARED First%
 COMMON SHARED Last%
 COMMON SHARED AM()
@@ -19,8 +26,12 @@ COMMON SHARED LastHop%
 COMMON SHARED X()
 COMMON SHARED Y()
 COMMON SHARED Z()
+COMMON SHARED XSSCR()
+COMMON SHARED YSSCR()
+COMMON SHARED ZSSCR()
 COMMON SHARED M()
 COMMON SHARED l()
+COMMON SHARED l2()
 COMMON SHARED THSCR()
 COMMON SHARED PHSCR()
 COMMON SHARED t()
@@ -45,7 +56,7 @@ COMMON SHARED INFOTH
 COMMON SHARED INFOPH
 COMMON SHARED INFODX
 
-DIM N$(400), X(400), Y(400), Z(400), M(400), s$(400), s(400, 3), l(400), PHSCR(400, 2), THSCR(400, 2), t(2), AM(400, 2), tt(4)
+DIM N$(400), X(400), Y(400), Z(400), M(400), s$(400), s(400, 3), l2(400), l(400), PHSCR(400, 2), THSCR(400, 2), t(2), AM(400, 2), tt(4), XSSCR(400, 2), YSSCR(400, 2), ZSSCR(400, 2)
 CONST PI = 3.141592653589793#
 infostar% = 1
 
@@ -54,16 +65,10 @@ CALL LoadStars
 CALL Menu
 CALL MakeScreen
 DO
-  'tt(0) = TIMER: LOCATE 14: PRINT tt(0) - tt(4)
   CALL Calc
-  'tt(1) = TIMER
   CALL PlotStars
-  'tt(2) = TIMER
   CALL MoveShip(SPEEDX, SPEEDY, SPEEDZ)
-  'tt(3) = TIMER
   CALL GetKey
-  'tt(4) = TIMER
-  'LOCATE 10: FOR jed = 1 TO 4: PRINT tt(jed) - tt(jed - 1): NEXT jed
 LOOP
 
 DATA "O",11,9,8,"B",11,7,8,"A",15,7,8,"F",15,7,8
@@ -79,9 +84,12 @@ SUB Calc
   XS = (X(StNum%) - Xo!) * COS(GLngR) - (Y(StNum%) - Yo!) * SIN(GLngR)
   YS = (Y(StNum%) - Yo!) * COS(GLngR) * COS(GLatR) + (X(StNum%) - Xo!) * SIN(GLngR) * COS(GLatR) + (Z(StNum%) - Zo!) * SIN(GLatR)
   ZS = (Z(StNum%) - Zo!) * COS(GLatR) - (Y(StNum%) - Yo!) * COS(GLngR) * SIN(GLatR) - (X(StNum%) - Xo!) * SIN(GLngR) * SIN(GLatR)
+  XSSCR(StNum%, ThisHop%) = 310 + (XS * MAG)
+  YSSCR(StNum%, ThisHop%) = 155 - (YS * MAG)
   IF DIST(XS, YS, ZS) > 0 THEN
     AM(StNum%, ThisHop%) = M(StNum%) - 5 + 5 * LOG(DIST(XS, YS, ZS) / 3.26) / LOG(10)
     IF AM(StNum%, ThisHop%) < 2.5 THEN l(StNum%) = 1 ELSE IF AM(StNum%, ThisHop%) < 4 THEN l(StNum%) = 2 ELSE IF AM(StNum%, ThisHop%) < 7 THEN l(StNum%) = 3
+    IF M(StNum%) < 2.5 THEN l2(StNum%) = 1 ELSE IF M(StNum%) < 4 THEN l2(StNum%) = 2 ELSE IF M(StNum%) < 7 THEN l2(StNum%) = 3
     IF YS = 0 THEN IF XS > 0 THEN THETA = 90 ELSE THETA = -90 ELSE THETA = ATN(XS / YS) * 180 / PI
     IF SQR(XS ^ 2 + YS ^ 2) = 0 THEN IF Z > 0 THEN PHI = 90 ELSE PHI = -90 ELSE PHI = ATN(ZS / SQR(XS ^ 2 + YS ^ 2)) * 180 / PI
     IF YS < 0 THEN THETA = THETA + 180
@@ -128,7 +136,7 @@ SUB GetKey
       END IF
     END IF
     IF X$ = "a" THEN SPEED = SPEED / 2
-    IF X$ = "M" THEN CALL StarMap: RePlot = 1
+    IF X$ = "M" THEN MapOn% = ABS(MapOn% - 1): RePlot% = 1
     IF X$ = "N" THEN infostar% = infostar% + 1
     IF X$ = "n" THEN infostar% = infostar% - 1
   END IF
@@ -157,7 +165,7 @@ Last% = NumStars%
 END SUB
 
 SUB MakeScreen
-RePlot = 0
+RePlot% = 0
 CLS 0: SCREEN 12
 VIEW (1, 1)-(620, 310), 0, 2
 LOCATE 21, 1: PRINT "Speed         ="
@@ -205,7 +213,11 @@ PALETTE 11, 65536 * 63 + 256 * 50 + 40
 END SUB
 
 SUB PlotStars
-  IF RePlot = 1 THEN CALL MakeScreen
+  IF RePlot% = 1 THEN CALL MakeScreen
+ 
+  SELECT CASE MapOn%
+ 
+  CASE 0
   FOR StNum% = First% TO Last%
     IF AM(StNum%, LastHop%) < 6 THEN
       PRESET (THSCR(StNum%, LastHop%), PHSCR(StNum%, LastHop%))
@@ -227,7 +239,35 @@ SUB PlotStars
       END IF
     END IF
 Skip:
-  NEXT StNum%
+NEXT StNum%
+
+CASE 1
+  CIRCLE (310, 155), 2, 3
+  FOR StNum% = First% TO Last%
+    IF M(StNum%) < 6 THEN
+      PRESET (XSSCR(StNum%, LastHop%), YSSCR(StNum%, LastHop%))
+      IF M(StNum%) < 0 THEN
+        PRESET (XSSCR(StNum%, LastHop%), YSSCR(StNum%, LastHop%) + 1)
+        PRESET (XSSCR(StNum%, LastHop%), YSSCR(StNum%, LastHop%) - 1)
+        PRESET (XSSCR(StNum%, LastHop%) + 1, YSSCR(StNum%, LastHop%))
+        PRESET (XSSCR(StNum%, LastHop%) - 1, YSSCR(StNum%, LastHop%))
+      END IF
+    END IF
+    IF XSSCR(StNum%, ThisHop%) < 2 OR YSSCR(StNum%, ThisHop%) < 2 OR XSSCR(StNum%, ThisHop%) > 619 OR YSSCR(StNum%, ThisHop%) > 309 THEN GOTO Skip2
+    IF M(StNum%) < 6 THEN
+      PSET (XSSCR(StNum%, ThisHop%), YSSCR(StNum%, ThisHop%)), s(StNum%, l2(StNum%))
+      IF M(StNum%) < 0 THEN
+        PSET (XSSCR(StNum%, ThisHop%), YSSCR(StNum%, ThisHop%) + 1), s(StNum%, l2(StNum%))
+        PSET (XSSCR(StNum%, ThisHop%), YSSCR(StNum%, ThisHop%) - 1), s(StNum%, l2(StNum%))
+        PSET (XSSCR(StNum%, ThisHop%) + 1, YSSCR(StNum%, ThisHop%)), s(StNum%, l2(StNum%))
+        PSET (XSSCR(StNum%, ThisHop%) - 1, YSSCR(StNum%, ThisHop%)), s(StNum%, l2(StNum%))
+      END IF
+    END IF
+Skip2:
+NEXT StNum%
+
+END SELECT
+
 t(ThisHop%) = TIMER
 IF SPEED > 0 THEN SPD! = SPEED * 31536000 / (t(ThisHop%) - t(LastHop%)) ELSE SPD! = 0
 IF SPEED < .01 THEN
