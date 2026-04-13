@@ -1,6 +1,6 @@
 REM ***********
 REM * 3D-STAR *
-REM * V. 0.95 *
+REM * V. 0.96 *
 REM ***********
 
 DECLARE SUB PalSet ()
@@ -19,6 +19,7 @@ COMMON SHARED RePlot%
 COMMON SHARED MapOn%
 COMMON SHARED First%
 COMMON SHARED Last%
+COMMON SHARED M2()
 COMMON SHARED AM()
 COMMON SHARED StNum%
 COMMON SHARED ThisHop%
@@ -36,8 +37,8 @@ COMMON SHARED THSCR()
 COMMON SHARED PHSCR()
 COMMON SHARED t()
 COMMON SHARED N$()
-COMMON SHARED s$()
-COMMON SHARED s()
+COMMON SHARED S$()
+COMMON SHARED S()
 COMMON SHARED X$
 COMMON SHARED Xo!
 COMMON SHARED Yo!
@@ -56,7 +57,7 @@ COMMON SHARED INFOTH
 COMMON SHARED INFOPH
 COMMON SHARED INFODX
 
-DIM N$(400), X(400), Y(400), Z(400), M(400), s$(400), s(400, 3), l2(400), l(400), PHSCR(400, 2), THSCR(400, 2), t(2), AM(400, 2), tt(4), XSSCR(400, 2), YSSCR(400, 2), ZSSCR(400, 2)
+DIM N$(450), X(450), Y(450), Z(450), M(450), S$(450), S(450, 3), l2(450), l(450), PHSCR(450, 2), THSCR(450, 2), t(2), AM(450, 2), tt(4), XSSCR(450, 2), YSSCR(450, 2), ZSSCR(450, 2), M2(450, 2)
 CONST PI = 3.141592653589793#
 infostar% = 1
 
@@ -72,8 +73,9 @@ DO
 LOOP
 
 DATA "O",11,9,8,"B",11,7,8,"A",15,7,8,"F",15,7,8
-DATA "G",14,7,8,"K",6,7,8,"M",12,7,8,"0",0,0,0
-DATA "W",11,9,8,"N",12,7,8
+DATA "G",14,7,8,"K",6,7,8,"M",12,7,8
+DATA "W",11,9,8,"N",12,7,8,"NEB",12,12,12,"OCL",9,9,9
+DATA "GCL",7,7,7,"0",0,0,0
 
 SUB Calc
   IF infostar% < 1 THEN infostar% = Last%
@@ -86,8 +88,14 @@ SUB Calc
   ZS = (Z(StNum%) - Zo!) * COS(GLatR) - (Y(StNum%) - Yo!) * COS(GLngR) * SIN(GLatR) - (X(StNum%) - Xo!) * SIN(GLngR) * SIN(GLatR)
   XSSCR(StNum%, ThisHop%) = 310 + (XS * MAG)
   YSSCR(StNum%, ThisHop%) = 155 - (YS * MAG)
+  ZSSCR(StNum%, ThisHop%) = ZS
   IF DIST(XS, YS, ZS) > 0 THEN
-    AM(StNum%, ThisHop%) = M(StNum%) - 5 + 5 * LOG(DIST(XS, YS, ZS) / 3.26) / LOG(10)
+    IF S$(StNum%) = "NEB" OR S$(StNum%) = "OCL" OR S$(StNum%) = "GCL" THEN
+      AM(StNum%, ThisHop%) = (ATN(M(StNum%) / DIST(XS, YS, ZS))) * 310 * MAG / PI
+      M2(StNum%, ThisHop%) = M(StNum%) * MAG
+    ELSE
+      AM(StNum%, ThisHop%) = M(StNum%) - 5 + 5 * LOG(DIST(XS, YS, ZS) / 3.26) / LOG(10)
+    END IF
     IF AM(StNum%, ThisHop%) < 2.5 THEN l(StNum%) = 1 ELSE IF AM(StNum%, ThisHop%) < 4 THEN l(StNum%) = 2 ELSE IF AM(StNum%, ThisHop%) < 7 THEN l(StNum%) = 3
     IF M(StNum%) < 2.5 THEN l2(StNum%) = 1 ELSE IF M(StNum%) < 4 THEN l2(StNum%) = 2 ELSE IF M(StNum%) < 7 THEN l2(StNum%) = 3
     IF YS = 0 THEN IF XS > 0 THEN THETA = 90 ELSE THETA = -90 ELSE THETA = ATN(XS / YS) * 180 / PI
@@ -150,13 +158,12 @@ CLS : LOCATE 1: PRINT "Loading star data..."
 DO WHILE (NOT EOF(1))
   LET NumStars% = NumStars% + 1
   LOCATE 1, 22: COLOR 14: PRINT NumStars%: COLOR 15
-  INPUT #1, N$(NumStars%), X(NumStars%), Y(NumStars%), Z(NumStars%), M(NumStars%), s$(NumStars%)
+  INPUT #1, N$(NumStars%), X(NumStars%), Y(NumStars%), Z(NumStars%), M(NumStars%), S$(NumStars%)
   SS$ = ""
   RESTORE
-  DO WHILE s$(NumStars%) <> SS$
-    READ SS$, s(NumStars%, 1), s(NumStars%, 2), s(NumStars%, 3)
+  DO WHILE S$(NumStars%) <> SS$
+    READ SS$, S(NumStars%, 1), S(NumStars%, 2), S(NumStars%, 3)
   LOOP
-  IF M > 10 THEN a = a - 1
 IF NumStars% >= MaxStars% THEN GOTO Label1
 LOOP
 Label1:
@@ -219,6 +226,7 @@ SUB PlotStars
  
   CASE 0
   FOR StNum% = First% TO Last%
+    IF S$(StNum%) = "NEB" OR S$(StNum%) = "OCL" OR S$(StNum%) = "GCL" THEN GOTO Object
     IF AM(StNum%, LastHop%) < 6 THEN
       PRESET (THSCR(StNum%, LastHop%), PHSCR(StNum%, LastHop%))
       IF AM(StNum%, LastHop%) < 1.5 THEN
@@ -230,20 +238,34 @@ SUB PlotStars
     END IF
     IF PHSCR(StNum%, ThisHop%) < 2 OR THSCR(StNum%, ThisHop%) < 2 OR PHSCR(StNum%, ThisHop%) > 309 OR THSCR(StNum%, ThisHop%) > 619 THEN GOTO Skip
     IF AM(StNum%, ThisHop%) < 6 THEN
-      PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%)), s(StNum%, l(StNum%))
+      PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%)), S(StNum%, l(StNum%))
       IF AM(StNum%, ThisHop%) < 1.5 THEN
-        PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%) + 1), s(StNum%, l(StNum%))
-        PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%) - 1), s(StNum%, l(StNum%))
-        PSET (THSCR(StNum%, ThisHop%) + 1, PHSCR(StNum%, ThisHop%)), s(StNum%, l(StNum%))
-        PSET (THSCR(StNum%, ThisHop%) - 1, PHSCR(StNum%, ThisHop%)), s(StNum%, l(StNum%))
+        PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%) + 1), S(StNum%, l(StNum%))
+        PSET (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%) - 1), S(StNum%, l(StNum%))
+        PSET (THSCR(StNum%, ThisHop%) + 1, PHSCR(StNum%, ThisHop%)), S(StNum%, l(StNum%))
+        PSET (THSCR(StNum%, ThisHop%) - 1, PHSCR(StNum%, ThisHop%)), S(StNum%, l(StNum%))
       END IF
     END IF
+    GOTO Skip
+Object:
+    IF AM(StNum%, LastHop%) > 1 THEN
+      CIRCLE (THSCR(StNum%, LastHop%), PHSCR(StNum%, LastHop%)), AM(StNum%, LastHop%), 0
+    END IF
+    IF PHSCR(StNum%, ThisHop%) < 2 OR THSCR(StNum%, ThisHop%) < 2 OR PHSCR(StNum%, ThisHop%) > 309 OR THSCR(StNum%, ThisHop%) > 619 THEN GOTO Skip
+    IF AM(StNum%, ThisHop%) > 1 THEN
+      CIRCLE (THSCR(StNum%, ThisHop%), PHSCR(StNum%, ThisHop%)), AM(StNum%, ThisHop%), S(StNum%, l(StNum%))
+    END IF
+
 Skip:
 NEXT StNum%
 
 CASE 1
+  LOCATE 4, 2: PRINT "Radius (light years):"
+  LOCATE 5, 2: PRINT USING "#####.##"; 155 / MAG
   CIRCLE (310, 155), 2, 3
+  CIRCLE (310, 155), 155, 3
   FOR StNum% = First% TO Last%
+    IF S$(StNum%) = "NEB" OR S$(StNum%) = "OCL" OR S$(StNum%) = "GCL" THEN GOTO Object2
     IF M(StNum%) < 6 THEN
       PRESET (XSSCR(StNum%, LastHop%), YSSCR(StNum%, LastHop%))
       IF M(StNum%) < 0 THEN
@@ -253,15 +275,25 @@ CASE 1
         PRESET (XSSCR(StNum%, LastHop%) - 1, YSSCR(StNum%, LastHop%))
       END IF
     END IF
-    IF XSSCR(StNum%, ThisHop%) < 2 OR YSSCR(StNum%, ThisHop%) < 2 OR XSSCR(StNum%, ThisHop%) > 619 OR YSSCR(StNum%, ThisHop%) > 309 THEN GOTO Skip2
+    IF SQR((XSSCR(StNum%, ThisHop%) - 310) ^ 2 + (YSSCR(StNum%, ThisHop%) - 155) ^ 2 + ZSSCR(StNum%, ThisHop%) ^ 2) > 154 THEN GOTO Skip2
     IF M(StNum%) < 6 THEN
-      PSET (XSSCR(StNum%, ThisHop%), YSSCR(StNum%, ThisHop%)), s(StNum%, l2(StNum%))
+      PSET (XSSCR(StNum%, ThisHop%), YSSCR(StNum%, ThisHop%)), S(StNum%, l2(StNum%))
       IF M(StNum%) < 0 THEN
-        PSET (XSSCR(StNum%, ThisHop%), YSSCR(StNum%, ThisHop%) + 1), s(StNum%, l2(StNum%))
-        PSET (XSSCR(StNum%, ThisHop%), YSSCR(StNum%, ThisHop%) - 1), s(StNum%, l2(StNum%))
-        PSET (XSSCR(StNum%, ThisHop%) + 1, YSSCR(StNum%, ThisHop%)), s(StNum%, l2(StNum%))
-        PSET (XSSCR(StNum%, ThisHop%) - 1, YSSCR(StNum%, ThisHop%)), s(StNum%, l2(StNum%))
+        PSET (XSSCR(StNum%, ThisHop%), YSSCR(StNum%, ThisHop%) + 1), S(StNum%, l2(StNum%))
+        PSET (XSSCR(StNum%, ThisHop%), YSSCR(StNum%, ThisHop%) - 1), S(StNum%, l2(StNum%))
+        PSET (XSSCR(StNum%, ThisHop%) + 1, YSSCR(StNum%, ThisHop%)), S(StNum%, l2(StNum%))
+        PSET (XSSCR(StNum%, ThisHop%) - 1, YSSCR(StNum%, ThisHop%)), S(StNum%, l2(StNum%))
       END IF
+    END IF
+    GOTO Skip2
+Object2:
+    IF M2(StNum%, LastHop%) > 1 THEN
+      CIRCLE (XSSCR(StNum%, LastHop%), YSSCR(StNum%, LastHop%)), M2(StNum%, LastHop%), 0
+    END IF
+    IF SQR((XSSCR(StNum%, ThisHop%) - 310) ^ 2 + (YSSCR(StNum%, ThisHop%) - 155) ^ 2 + ZSSCR(StNum%, ThisHop%) ^ 2) > 154 THEN GOTO Skip2
+    IF XSSCR(StNum%, ThisHop%) < 2 OR YSSCR(StNum%, ThisHop%) < 2 OR YSSCR(StNum%, ThisHop%) > 309 OR XSSCR(StNum%, ThisHop%) > 619 THEN GOTO Skip
+    IF M2(StNum%, ThisHop%) > 1 THEN
+      CIRCLE (XSSCR(StNum%, ThisHop%), YSSCR(StNum%, ThisHop%)), M2(StNum%, ThisHop%), S(StNum%, l(StNum%))
     END IF
 Skip2:
 NEXT StNum%
@@ -275,6 +307,7 @@ IF SPEED < .01 THEN
 ELSE
     sped = SPEED
 END IF
+
 LOCATE 21, 17: PRINT USING "###.## & per jump          "; sped; U$(SPEED)
 LOCATE 21, 50: PRINT USING "########.## c"; SPD!
 LOCATE 22, 17: PRINT USING "####.#  mark ####.#  "; GLngD%; GLatD%
