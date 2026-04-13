@@ -1,6 +1,6 @@
 REM ***********
 REM * 3D-STAR *
-REM * V. 0.96 *
+REM * Ver 1.0 *
 REM ***********
 
 DECLARE SUB PalSet ()

@@ -1,5 +1,6 @@
                                 3 D - S T A R
-                                Version  0.96
+                                Version   1.0
+
 
 INTRODUCTION  
   
@@ -11,15 +12,16 @@ travel through this part of the galaxy, exploring our neighborhood of space
 out to a few thousand light-years.  Some of the features of this version
 are:
 
-þ Actual (X,Y,Z) galactic coordinates of 358 stars and 63 nebulae and
-  star clusters, including:  
+þ Actual (X,Y,Z) galactic coordinates of 358 stars and 49 nebulae and
+  star clusters, including:
     The 25 brightest stars (as seen from Earth)
     The 26 nearest stars to Earth (including Sol)
     The brighter stars of every major constellation
 
-þ Add more stars and other objects with the program 3DDATA.BAS, using 
+þ Add more stars and other objects with the program 3DDATA.EXE, using 
   their equatorial coordinates (RA, DEC), distance in light-years, 
-  absolute magnitude (or size), and spectral class (or object type).
+  absolute magnitude (or size, for non-stellar objects), and spectral 
+  class (or object type).
 
 þ Apparent magnitudes calculated as you travel through space, so you
   can see the stars' correct brightness relative to each other.
@@ -34,6 +36,8 @@ are:
   simulation of spectral colors.
 
 þ Information bar displays direction and distance info on any star.
+
+þ StarMap mode shows the area around your spacecraft from "above".
 
 
   You should have the following files:
@@ -53,7 +57,7 @@ GETTING STARTED
 
   Type "3DSTAR" to start the program.  When the program asks you how many 
 stars to load, hit <ENTER> to load all of them.  After loading the stars 
-from the 3DSTAR.DAT file into memory, the program will ask you for starting
+from the file 3DSTAR.DAT into memory, the program will ask you for starting
 parameters.  The first time you run the program, hit <ENTER> eight times 
 to accept the default values.
 
@@ -96,9 +100,34 @@ then the two stars Acrux and Beta Crucis in the Southern Cross.
 from above your location ("up" in the Z direction) with the stars' brightness
 depending on their absolute (real) magnitude rather than their apparent
 brightness from your location.  You can move your ship around in this mode,
-just like normal, and your location is the small cyan circle in the middle
-of the screen.  The magnification now controls how many pixels for each
-light-year, so at magnification = 1, 1 pixel is 1 light year.
+just like normal, and your location is marked by the small cyan circle in the
+center of the screen.  The magnification now controls how many pixels for 
+each light-year, so at magnification = 1, 1 pixel is 1 light year.
+
+  The lower half of the screen displays your current status.  Your speed is
+shown in light years (or Astronomical Units, if you're moving slowly enough)
+per jump.  To the right of this is your speed in multiples of light speed.
+This is calculated by dividing the distance traveled per jump divided by the
+time between jumps (see System Speed display).  Below this is your current
+course.  The first number is the galactic longitude of your heading.  Zero
+degrees is defined as directly towards the galactic core, 90 degrees is to
+the right, 180 degrees is directly away from the galactic core, and 270
+degrees is to the left.  Then, after the word "mark", is the galactic
+latitude of your heading.  Zero degrees is towards th galactic plane, 90
+degrees is directly "up" out of the galactic plane, and -90 degrees is
+"down".  On the next line is your current galactic coordinates.  The program
+uses a Cartesian coordinate system with light years as units, and the origin
+(0,0,0) is at our Sun.  The X-Y plane is the plane of the galaxy, with the
+positive Y direction directly towards the center of the galaxy.  The positive
+Z direction is "up" out of the galactic plane, towards the north galactic
+pole (which is in Coma Berenices as seen from from our solar system).  The
+next line shows the magnification of the viewing screen.  Below that is the
+System Speed, which shows how many seconds the computer takes to calculate
+your status for each jump.  The bottom line, which is in purple, is the
+Information Bar.  This gives you information on whichever object you are
+currently tracking.  From left to right, it tells you the object's name,
+bearing (0 mark 0 means you are heading towards it), distance, and apparent
+magnitude.  Use "N" and "n" to select an object to track.
 
   Here are the keys that are currently available while the program is
 running:
@@ -111,39 +140,67 @@ running:
                 Num Lock on
   5 ........... Set a course for the star on info display.  You may need
                 to press 5 several times for a perfect aim; check the info
-                bar to see if the course is correct.
-  N ........... Next star on information display
-  n ........... Last star on information display
+                bar to see if the course is correct (bearing will be 0 mark
+                0 when you are heading directly towards it).
+  N ........... Track the next star on information display
+  n ........... Track the previous star on information display
   M ........... Toggle Star Map On/Off
   Q or ^Break . Quit
 
   On slower computers (anything less than a 486DX) this program is likely
-to run slowly with all 421 of the objects loaded.  Look at the "System Speed"
+to run slowly with all 407 of the objects loaded.  Look at the "System Speed"
 indicator at the bottom of the screen; it tells you how many seconds it 
 takes between each update of the screen.  If it's more than 1 or 2 seonds,
 the program will respond too slowly to commands and you may wish to restart
 the progam and load less stars.  At the prompt "How many stars?" type a
-number less than 421 (less than 358 if you only want to see stars).  The 
-less stars you load, the less detailed the starfield will be but the faster 
-it will run.  If you just want to see the constellations from a different 
-star, and you're not going to be moving, load all the stars for maximum 
-detail.
+number less than 407 (less than 358 if you only want to see stars; the
+after #358 are all star clusters and nebulae).  The fewer stars you load,
+the less detailed the starfield will be but the faster it will run.  If 
+you just want to see the constellations from a different star, and you're 
+not going to be moving, load all the stars for maximum detail.
+
+
+ENTERING YOUR OWN DATA
+
+The program 3DDATA.EXE can be used to input data on a star or other object
+not included in the database.  First you enter the name of the object, then
+its equatorial coordinates.  Right ascension is entered in the form "HHMMT",
+where HH is the hours, MM is the minutes, and T is tenths of minutes; e.g.
+14 hours 27.3 minutes would be entered as 14273.  Declination is next
+input in the form "+DDMM", where + is the sign (+ or -), DD is degrees, and
+MM is minutes.  So -13 degrees 45 minutes would be -1345.  If no sign is
+entered, + is assumed.  Then the distance in light-years is entered.  Next
+the program asks for the absolute magnitude of the object.  If the object
+is a star cluster or nebula, enter the radius of the object in light-years
+instead.  Finally, the spectral type is entered.  Only type in the letter
+of the spectral type, leave out the number and luminousity class.  If the
+object is not a star, type "OCL" for an open star cluster, "GCL" for a
+globular star cluster, or "NEB" for any type of nebula, when prompted for
+the spectral type.
+
+3DDATA takes the direction and distance coordinates and converts them into
+X, Y, Z coordinates, where the positive "Y" direction is towards the
+galactic core, the positive "X" direction is in the plane of the galaxy,
+90 degrees clockwise from the positive "Y" axis, and the positive "Z"
+direction is towards the north galactic pole, in Coma Berenices.  The
+absolute magnitude and spectral type are used to determine the color and
+brightness of the star.
 
 
 HISTORY
 
-Early 1992 ......... Started writing simple 3DSTAR program, with random stars
+Early 1993 ......... Started writing simple 3DSTAR program, with random stars
                      and no differences in brightness, color, etc.  Problem
                      with keeping stars in the right quadrants halted
                      progress.
 
-December 28, 1992 .. Started working on it again.  Also started trying to
+December 28, 1993 .. Started working on it again.  Also started trying to
                      figure out how to translate spherical coordinates from
                      one system to another, for 3DSTAR to translate to the
                      observers coordinates and viewing angle, and also for 
                      3DDATA to convert from equatorial to galactic coords.
 
-December 30, 1992 .. Derived spherical translation equations from 2-d polar
+December 30, 1993 .. Derived spherical translation equations from 2-d polar
                      coordinate system rotation equations and got both
                      3DSTAR and 3DDATA working, but without magnitudes and
                      spectral types.
@@ -186,8 +243,5 @@ June 4, 1994 ....... Version 0.95 released.  Now has a StarMap mode.
 June 5, 1994 ....... Started working on version 0.96 with nebulae and
                      star clusters.
 
-****************************************************************************
-
-??????? ??, 19?? ... Once the mouse support, menu windows, etc. are finished 
-                     I will release the program (version 1.0) as shareware.
+July 16, 1995 ...... Version 1.0 released.
 
