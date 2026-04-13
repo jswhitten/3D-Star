@@ -14,6 +14,8 @@ QBasic interpreter script with 64 stars (v0.01, Jan 1994) to a compiled
 QuickBASIC 4.5 executable with 407 objects, a star map, an info bar, and
 course-to-target navigation (v1.0, Jul 1995).
 
+![Screenshot](3D-Star_screenshot.png)
+
 ## Files
 
 | File          | Purpose                                                          |
