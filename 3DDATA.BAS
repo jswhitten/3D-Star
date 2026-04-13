@@ -1,5 +1,5 @@
 OPEN "3DSTAR.DAT" FOR APPEND AS #1
-PI = 3.1415926535#
+PI = 3.141592653589793#
 ALF = 62.53 * PI / 180
 BET = 78.56 * PI / 180
 GAM = 33.02 * PI / 180
@@ -58,6 +58,4 @@ Save:
 WRITE #1, N$, XG, YG, ZG, M, S$
 PRINT : PRINT "Data saved."
 GOTO Another
-
-
 

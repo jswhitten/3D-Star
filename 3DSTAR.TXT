@@ -1,5 +1,5 @@
-                                 3DSTAR.BAS
-                                Version 0.01
+                                 3DSTAR.EXE
+                                Version 0.90
 
 INTRODUCTION  
   
@@ -35,16 +35,15 @@ are:
 
   You should have the following files:
 
-3DSTAR.TXT              This documentation
-3DSTAR.BAS              The main program
-3DDATA.BAS              Enter stars into the database
+3DSTAR.DOC              This documentation
+3DSTAR.EXE              The main program
+3DDATA.EXE              Enter stars into the database
 3DSTAR.DAT              The star database
-3DSTAR.GIF              A picture explaining the coordinates on-screen
 
 GETTING STARTED
 
-  Type "QBASIC /RUN 3DSTAR" to start the program.  After loading the stars
-from the 3DSTAR.DAT file into memory, the program will ask you for starting
+  Type "3DSTAR" to start the program.  After loading the stars from the 
+3DSTAR.DAT file into memory, the program will ask you for starting 
 parameters.  The first time you run the program, hit <ENTER> seven times to
 accept the default values.
 
@@ -84,11 +83,10 @@ passing the blue star Beta Centauri, then the two stars Acrux and Beta
 Crucis.
 
   Here are the keys that are currently available while the program is
-running.  Because of the speed, or rather lack of speed, of the BASIC
-interpreter, you will have to wait a while before your command takes
-effect.  On my 386SX/16 it takes about 6 seconds between jumps with all
-64 stars loaded, so it takes from 6 to 12 seconds for my commands to
-take effect.
+running.  If you have used version 0.01 of this program (the BASIC version)
+you will be pleasantly surprised by the speed of the compiled version.
+While it used to take about 6 seconds between jumps on my computer, a
+386SX/16, it now takes only 0.7 seconds with the compiled .EXE prgram.
 
   Z ........... Zoom in by 2x
   X ........... UnZoom by 2x
@@ -128,16 +126,18 @@ January 2, 1994 .... Finished version 0.01, 3DSTAR now works at any viewing
                      apparent magnitudes working perfectly, with no screen
                      glitches.
 
----------------------------------------------------------------------------
+January 30, 1994 ... Finished version 0.90, compiled with QuickBasic 4.5.
+                     The StarMap still is not finished but the palette has
+                     been adjusted (no more brown or green stars!) and the
+                     stars are now points instead of disks.  Looks much
+                     better and runs much faster than the QBasic interpreted
+                     program did, and the source code is now structured 
+                     with subprograms and functions for easier modification.
 
-January? ??, 1994 .. Will add a StarMap available within the program by
-                     typing "M".  Coding already begun, so if you type   
-                     "M" now it will do weird things.  This will be version
-                     0.02 when completed.
+----------------------------------------------------------------------------
 
-??????? ??, 1994? .. Will get QuickBasic and compile the programs to run
-                     faster as .EXE's.  This will be version 1.0 and will
-                     be released as shareware.
+??????? ??, 1994? .. Once the StarMap, menu windows, etc. are finished I
+                     will release the program (version 1.0) as shareware.
 
 
 
